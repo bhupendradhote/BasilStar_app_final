@@ -1,33 +1,91 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { View, Text } from 'react-native';
+import { Ionicons, MaterialIcons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  const renderIconWithLabel = (
+    focused: boolean,
+    IconComponent: any,
+    iconName: string,
+    size: number,
+    label: string
+  ) => {
+    const bgColor = focused ? '#123530' : 'transparent';
+    const textColor = focused ? '#fff' : '#123530';
+
+    return (
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 65,    // slightly smaller container
+          height: 55,
+          borderRadius: 10,
+          backgroundColor: bgColor,
+          paddingVertical: 6,
+        }}
+      >
+        <IconComponent name={iconName} size={size} color={textColor} />
+        <Text style={{ color: textColor, fontSize: 10, fontWeight: '600', marginTop: 2 }}>
+          {label}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: {
+          paddingTop: 13,
+          paddingBottom: 8,
+          height: 90,
+          backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+        },
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="news"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ focused }) =>
+            renderIconWithLabel(focused, Ionicons, 'newspaper-outline', 20, 'News'),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="technical"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ focused }) =>
+            renderIconWithLabel(focused, MaterialCommunityIcons, 'chart-bar', 20, 'Technical'),
+        }}
+      />
+      <Tabs.Screen
+        name="dashboard"
+        options={{
+          tabBarIcon: ({ focused }) =>
+            renderIconWithLabel(focused, MaterialIcons, 'dashboard', 20, 'Dashboard'),
+        }}
+      />
+      <Tabs.Screen
+        name="fundamental"
+        options={{
+          tabBarIcon: ({ focused }) =>
+            renderIconWithLabel(focused, FontAwesome5, 'chart-line', 20, 'Fundamental'),
+        }}
+      />
+      <Tabs.Screen
+        name="watchlist"
+        options={{
+          tabBarIcon: ({ focused }) =>
+            renderIconWithLabel(focused, Ionicons, 'star-outline', 20, 'Watchlist'),
         }}
       />
     </Tabs>
