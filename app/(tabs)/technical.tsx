@@ -18,14 +18,12 @@ type Stock = {
   symbol: string;
   price: string;
   change: string;
-  changePercent: string;
   signal: string;
   keyLevel: string;
   target1: string;
   target2: string;
   stoploss1: string;
   stoploss2: string;
-  isPositive: boolean;
 };
 
 const dummyStocks: Stock[] = [
@@ -34,40 +32,39 @@ const dummyStocks: Stock[] = [
     name: 'Honasa Consumer Limited',
     symbol: 'HONASA.NS',
     price: '₹1205.50',
-    change: '-12.5',
-    changePercent: '1.05%',
+    change: '-12.5 (1.05%)',
     signal: 'Strong Sell',
     keyLevel: '₹1200',
     target1: '₹1240',
     target2: '₹1270',
     stoploss1: '₹1190',
     stoploss2: '₹1180',
-    isPositive: false,
   },
   {
     id: '2',
     name: 'Apple Inc.',
     symbol: 'AAPL',
     price: '$178.50',
-    change: '+2.5',
-    changePercent: '1.42%',
+    change: '+2.5 (1.42%)',
     signal: 'Buy',
     keyLevel: '$178',
     target1: '$182',
     target2: '$185',
     stoploss1: '$176',
     stoploss2: '$174',
-    isPositive: true,
   },
+  // Add more stocks as needed
 ];
 
 export default function TechnicalScreen() {
   const colorScheme = useColorScheme();
-  const colors = colorScheme === 'dark' ? Theme.Colors.dark : Theme.Colors.light;
+  const colors =
+    colorScheme === 'dark' ? Theme.Colors.dark : Theme.Colors.light;
 
   const [search, setSearch] = useState('');
-  const [selectedStock, setSelectedStock] = useState<Stock | null>(dummyStocks[0]);
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
 
+  // Filter stocks based on search
   const filteredStocks = dummyStocks.filter((stock) =>
     stock.name.toLowerCase().includes(search.toLowerCase()) ||
     stock.symbol.toLowerCase().includes(search.toLowerCase())
@@ -78,7 +75,7 @@ export default function TechnicalScreen() {
       style={[styles.dropdownItem, { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#f2f2f2' }]}
       onPress={() => {
         setSelectedStock(item);
-        setSearch(item.name);
+        setSearch(item.name); // Fill search bar with selected stock
       }}
     >
       <Text style={[styles.stockName, { color: colors.text }]}>{item.name}</Text>
@@ -86,44 +83,34 @@ export default function TechnicalScreen() {
     </TouchableOpacity>
   );
 
-  const getSignalColor = (signal: string) => {
-    switch (signal.toLowerCase()) {
-      case 'strong sell': return '#FF6B6B';
-      case 'sell': return '#FF6B6B';
-      case 'strong buy': return '#5EC385';
-      case 'buy': return '#5EC385';
-      case 'neutral': return '#F0C53A';
-      default: return colors.icon;
-    }
-  };
-
-  const getSignalBackgroundColor = (signal: string) => {
-    switch (signal.toLowerCase()) {
-      case 'strong sell': return '#FF6B6B';
-      case 'sell': return '#FF6B6B';
-      case 'strong buy': return '#5EC385';
-      case 'buy': return '#5EC385';
-      case 'neutral': return '#F0C53A';
-      default: return colors.icon;
-    }
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <View style={styles.headerLeft}>
-          <MaterialCommunityIcons name="chart-line" size={28} color={colors.text} />
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Technical Analysis</Text>
-        </View>
+        <MaterialCommunityIcons
+          name="view-dashboard"
+          size={28}
+          color="#123530"
+        />
         <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={24} color={colors.text} />
+          <Ionicons name="notifications" size={28} color="#123530" />
         </TouchableOpacity>
       </View>
 
+      {/* Section Title */}
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          Technical
+        </Text>
+      </View>
+
       {/* Search Bar */}
-      <View style={[styles.searchContainer, { backgroundColor: colorScheme === 'dark' ? '#1a4330' : '#f8f9fa' }]}>
-        <Ionicons name="search" size={20} color={colors.icon} style={styles.searchIcon} />
+      <View
+        style={[
+          styles.searchContainer,
+          { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#f2f2f2' },
+        ]}
+      >
         <TextInput
           style={[styles.searchInput, { color: colors.text }]}
           placeholder="Search Stock"
@@ -131,8 +118,14 @@ export default function TechnicalScreen() {
           value={search}
           onChangeText={(text) => {
             setSearch(text);
-            if (text.length === 0) setSelectedStock(null);
+            setSelectedStock(null); // Clear selected stock while typing
           }}
+        />
+        <Ionicons
+          name="search"
+          size={20}
+          color={colors.text}
+          style={styles.searchIcon}
         />
         {search.length > 0 && (
           <TouchableOpacity onPress={() => {
@@ -150,111 +143,51 @@ export default function TechnicalScreen() {
           data={filteredStocks}
           keyExtractor={(item) => item.id}
           renderItem={renderStockItem}
-          style={styles.dropdownList}
+          contentContainerStyle={{ paddingBottom: 16 }}
           showsVerticalScrollIndicator={false}
         />
       )}
 
       {/* Stock Details */}
       {selectedStock && (
-        <ScrollView style={styles.detailsContainer} showsVerticalScrollIndicator={false}>
-          {/* Stock Header */}
-          <View style={styles.stockHeader}>
-            <View>
-              <Text style={[styles.stockNameLarge, { color: colors.text }]}>{selectedStock.name}</Text>
-              <Text style={[styles.stockSymbolLarge, { color: colors.icon }]}>{selectedStock.symbol}</Text>
-            </View>
-           
+        <ScrollView style={styles.detailsContainer}>
+          <Text style={[styles.stockTitle, { color: colors.text }]}>
+            {selectedStock.name} ({selectedStock.symbol})
+          </Text>
+          <Text style={[styles.signalText, { color: colors.icon }]}>{selectedStock.signal}</Text>
+          <Text style={[styles.priceText, { color: colors.text }]}>
+            {selectedStock.price} {selectedStock.change}
+          </Text>
+
+          <View style={styles.sectionBox}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>Key Level</Text>
+            <Text style={[styles.sectionValue, { color: colors.text }]}>{selectedStock.keyLevel}</Text>
           </View>
 
-          {/* Strong Sell Button - Middle of Screen */}
-          <TouchableOpacity style={[
-            styles.signalButton, 
-            { backgroundColor: getSignalBackgroundColor(selectedStock.signal) }
-          ]}>
-            <Text style={styles.signalButtonText}>{selectedStock.signal}</Text>
-            <MaterialIcons 
-              name={selectedStock.signal.toLowerCase().includes('sell') ? "trending-down" : "trending-up"} 
-              size={20} 
-              color="#ffffff" 
-            />
-          </TouchableOpacity>
- <View style={styles.priceContainer}>
-              <View style={styles.priceRow}>
-                <Text style={[styles.priceText, { color: colors.text }]}>{selectedStock.price}</Text>
-                <View style={styles.changeContainer}>
-                  <MaterialIcons 
-                    name={selectedStock.isPositive ? "arrow-upward" : "arrow-downward"} 
-                    size={16} 
-                    color={selectedStock.isPositive ? "#5EC385" : "#FF6B6B"} 
-                  />
-                  <Text style={[
-                    styles.changeText, 
-                    { color: selectedStock.isPositive ? "#5EC385" : "#FF6B6B" }
-                  ]}>
-                    {selectedStock.change} ({selectedStock.changePercent})
-                  </Text>
-                </View>
-              </View>
-            </View>
-          {/* Key Levels Table */}
-          <View style={styles.tableContainer}>
-            <Text style={[styles.tableHeading, { color: colors.text }]}>Key Level</Text>
-            <View style={[styles.table, { backgroundColor: colorScheme === 'dark' ? '#1a4330' : '#ffffff' }]}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Key Level</Text>
-                <Text style={[styles.tableValue, { color: colors.text }]}>{selectedStock.keyLevel}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Market Sentiment</Text>
-                <View style={styles.sentimentContainer}>
-                  <Text style={[styles.sentimentText, { color: getSignalColor(selectedStock.signal) }]}>
-                    {selectedStock.signal}
-                  </Text>
-                </View>
-              </View>
-            </View>
+          <View style={styles.sectionBox}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>Targets</Text>
+            <Text style={[styles.sectionValue, { color: colors.text }]}>Target 1: {selectedStock.target1}</Text>
+            <Text style={[styles.sectionValue, { color: colors.text }]}>Target 2: {selectedStock.target2}</Text>
           </View>
 
-          {/* Targets Table */}
-          <View style={styles.tableContainer}>
-            <Text style={[styles.tableHeading, { color: colors.text }]}>Targets</Text>
-            <View style={[styles.table, { backgroundColor: colorScheme === 'dark' ? '#1a4330' : '#ffffff' }]}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Target</Text>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Price</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Target 1</Text>
-                <Text style={[styles.tableValue, { color: colors.text }]}>{selectedStock.target1}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Target 2</Text>
-                <Text style={[styles.tableValue, { color: colors.text }]}>{selectedStock.target2}</Text>
-              </View>
-            </View>
+          <View style={styles.sectionBox}>
+            <Text style={[styles.sectionHeading, { color: colors.text }]}>Stoploss</Text>
+            <Text style={[styles.sectionValue, { color: colors.text }]}>Stoploss 1: {selectedStock.stoploss1}</Text>
+            <Text style={[styles.sectionValue, { color: colors.text }]}>Stoploss 2: {selectedStock.stoploss2}</Text>
           </View>
 
-          {/* Stoploss Table */}
-          <View style={styles.tableContainer}>
-            <Text style={[styles.tableHeading, { color: colors.text }]}>Stoploss</Text>
-            <View style={[styles.table, { backgroundColor: colorScheme === 'dark' ? '#1a4330' : '#ffffff' }]}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Stoploss</Text>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Price</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Stoploss 1</Text>
-                <Text style={[styles.tableValue, { color: colors.text }]}>{selectedStock.stoploss1}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableLabel, { color: colors.icon }]}>Stoploss 2</Text>
-                <Text style={[styles.tableValue, { color: colors.text }]}>{selectedStock.stoploss2}</Text>
-              </View>
-            </View>
-          </View>
+          {/* Add more sections like News, Technical, Dashboard, Fundamental as needed */}
         </ScrollView>
       )}
+      {/* AI Chat Section - fixed at bottom right */}
+             <TouchableOpacity style={[styles.aiButton, { position: 'absolute', bottom: 20, right: 20 }]}>
+              <View style={styles.aiInner}>
+                <View style={styles.aiIconContainer}>
+                  <MaterialIcons name="smart-toy" size={38} color="#123530" />
+                </View>
+                <Text style={styles.aiButtonTitle}>chat with ai</Text>
+              </View>
+            </TouchableOpacity>
     </View>
   );
 }
@@ -268,164 +201,111 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
     paddingTop: 16,
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  sectionHeader: {
+    marginBottom: 16,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: 'Bree',
-    fontWeight: '600',
+  sectionTitle: {
+    ...Theme.Typography.heading,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 16,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 1,
+    marginBottom: 10,
   },
   searchIcon: {
-    marginRight: 12,
+    marginRight: 8,
   },
   searchInput: {
     flex: 1,
+    borderRadius: 8,
+    height: 40,
     fontSize: 16,
-    fontFamily: 'Poppins',
-  },
-  dropdownList: {
-    maxHeight: 200,
-    marginBottom: 16,
   },
   dropdownItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 8,
   },
   stockName: {
     fontSize: 16,
-    fontFamily: 'Poppins',
     fontWeight: '500',
   },
   stockSymbol: {
     fontSize: 14,
-    fontFamily: 'Poppins',
+    fontWeight: '400',
   },
   detailsContainer: {
-    flex: 1,
+    marginTop: 16,
   },
-  stockHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
-  },
-  stockNameLarge: {
+  stockTitle: {
     fontSize: 18,
-    fontFamily: 'Bree',
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  signalText: {
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
-  },
-  stockSymbolLarge: {
-    fontSize: 14,
-    fontFamily: 'Poppins',
-    color: '#687076',
-  },
-  priceContainer: {
-    alignItems: 'center',
-  },
-  priceRow: {
-    alignItems: 'flex-end',
   },
   priceText: {
-    fontSize: 24,
-    fontFamily: 'Bree',
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  changeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  changeText: {
-    fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  signalButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginVertical: 24,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  signalButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontFamily: 'Bree',
-    fontWeight: '700',
-  },
-  tableContainer: {
-    marginBottom: 24,
-  },
-  tableHeading: {
-    fontSize: 18,
-    fontFamily: 'Bree',
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '500',
     marginBottom: 12,
   },
-  table: {
-    borderRadius: 12,
-    padding: 16,
+  sectionBox: {
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: '#f2f2f2',
+  },
+  sectionHeading: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  sectionValue: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  aiButton: {
+    zIndex: 10,
+  },
+ aiInner: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 0,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: '#ffffffff',
+    borderRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 5,
   },
-  tableRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  tableLabel: {
-    fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '500',
-    flex: 1,
-  },
-  tableValue: {
-    fontSize: 16,
+  aiButtonTitle: {
+    fontSize: 10,
     fontFamily: 'Bree',
     fontWeight: '600',
-    flex: 1,
-    textAlign: 'right',
+    color: '#123530',
+    textTransform: 'lowercase',
   },
-  sentimentContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
+  aiIconContainer: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    // backgroundColor: '#0f3d2a',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  sentimentText: {
-    fontSize: 14,
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-  },
+
 });

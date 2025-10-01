@@ -28,7 +28,7 @@ export default function TabLayout() {
           height: 55,
           borderRadius: 10,
           backgroundColor: bgColor,
-          paddingVertical: 6,
+          paddingVertical: 2,
         }}
       >
         <IconComponent name={iconName} size={size} color={textColor} />
@@ -48,7 +48,7 @@ export default function TabLayout() {
         tabBarStyle: {
           paddingTop: 13,
           paddingBottom: 8,
-          height: 90,
+          height: 60,
           backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
         },
       }}
@@ -85,7 +85,7 @@ export default function TabLayout() {
         name="watchlist"
         options={{
           tabBarIcon: ({ focused }) =>
-            renderIconWithLabel(focused, Ionicons, 'star-outline', 20, 'Watchlist'),
+            renderIconWithLabel(focused, Ionicons, 'bookmark-outline', 20, 'Watchlist'),
         }}
       />
     </Tabs>

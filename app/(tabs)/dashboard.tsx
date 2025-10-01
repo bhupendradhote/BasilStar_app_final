@@ -1,72 +1,210 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+} from 'react-native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '@/services/_api';
+import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import IndexChart from '@/components/dashboard/IndexChart';
 
 export default function DashboardScreen() {
+  const router = useRouter();
+  const [userName, setUserName] = useState<string>('');
+
+  // Load logged-in user from AsyncStorage
+  const loadUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserName(parsedUser.name || '');
+      }
+    } catch (error) {
+      console.error('Error loading user:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      await api.post('/logout');
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('user');
+
+      Alert.alert('Logged Out', 'You have been successfully logged out.');
+      router.replace('/(auth)/AuthScreen');
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      Alert.alert('Error', error.response?.data?.message || 'Logout failed');
+    }
+  };
+
+  // Explore More Data
+  const exploreItems = [
+    {
+      title: 'Daily Analysis',
+      icon: 'analytics-outline',
+      cardStyle: styles.cardDaily,
+      textStyle: styles.titleDaily,
+      iconSize: 45,
+      onPress: () => {}, 
+    },
+    {
+      title: "Today's Outlooks",
+      icon: 'calendar-outline',
+      cardStyle: styles.cardOutlooks,
+      textStyle: styles.titleOutlooks,
+      iconSize: 45,
+      onPress: () => router.push('/pages/todaysOutlook/todaysOutlook'),
+    },
+    {
+      title: 'Learning',
+      icon: 'school-outline',
+      cardStyle: styles.cardLearning,
+      textStyle: styles.titleLearning,
+      iconSize: 24,
+      onPress: () => router.push('/pages/learning/learning'),
+    },
+    {
+      title: 'Upcoming Events',
+      icon: 'calendar-number-outline',
+      cardStyle: styles.cardEvents,
+      textStyle: styles.titleEvents,
+      iconSize: 24,
+      onPress: () => {}, 
+    },
+    {
+      title: 'Calculator',
+      icon: 'calculator-outline',
+      cardStyle: styles.cardCalculator,
+      textStyle: styles.titleCalculator,
+      iconSize: 24,
+      onPress: () => router.push('/pages/calculator/calculator'),
+    },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Dashboard</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <MaterialCommunityIcons name="view-dashboard" size={28} color="#123530" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            {userName ? <Text style={styles.userName}>{userName}</Text> : null}
+            <TouchableOpacity onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={28} color="#123530" />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons name="notifications" size={28} color="#123530" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      {/* Portfolio Summary */}
-      <View style={styles.card}>
-        <Text style={styles.title}>Portfolio Value</Text>
-        <Text style={styles.value}>₹1,25,000</Text>
-        <Text style={styles.change}>+2.3% Today</Text>
-      </View>
+        {/* Welcome Section */}
+        <View style={styles.welcomeBox}>
+          <View>
+            <Text style={styles.welcomeText}>Welcome Back</Text>
+            <Text style={styles.welcomeName}>{userName || "User"}</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push("/pages/profile/userProfile")}>
+            <Image
+              source={{ uri: "https://i.pravatar.cc/150?img=12" }}
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
+        </View>
 
-      {/* Market Overview */}
-      <View style={styles.card}>
-        <Text style={styles.title}>Market Overview</Text>
-        <Text style={styles.item}>NIFTY 50: 19,850 (+0.5%)</Text>
-        <Text style={styles.item}>SENSEX: 66,200 (+0.8%)</Text>
-        <Text style={styles.item}>Bank NIFTY: 45,120 (-0.3%)</Text>
-      </View>
+        {/* Explore More Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Explore More</Text>
+        </View>
+        <View style={styles.cardGrid}>
+          {exploreItems.map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={[styles.exploreCard, item.cardStyle]}
+              onPress={item.onPress}
+            >
+              <Text style={[styles.exploreCardText, item.textStyle]}>{item.title}</Text>
+              <View style={styles.iconWrapper}>
+                <Ionicons name={item.icon as any} size={item.iconSize} color="#123530" />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* Watchlist Preview */}
-      <View style={styles.card}>
-        <Text style={styles.title}>Top Movers</Text>
-        <Text style={styles.item}>INFY: ₹1,480 (+1.2%)</Text>
-        <Text style={styles.item}>TCS: ₹3,520 (-0.6%)</Text>
-        <Text style={styles.item}>RELIANCE: ₹2,420 (+0.9%)</Text>
-      </View>
-    </ScrollView>
+        {/* Indices Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Indices</Text>
+          <TouchableOpacity>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+  
+      <IndexChart />
+
+        {/* Market Movers */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Market Movers</Text>
+          <TouchableOpacity>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* AI Chat Floating Button */}
+      <TouchableOpacity style={styles.aiButton}>
+        <View style={styles.aiInner}>
+          <View style={styles.aiIconContainer}>
+            <MaterialIcons name="smart-toy" size={38} color="#123530" />
+          </View>
+          <Text style={styles.aiButtonTitle}>chat with ai</Text>
+        </View>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  card: {
-    backgroundColor: '#f2f2f2',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 14,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  value: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#2a9d8f',
-  },
-  change: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 4,
-  },
-  item: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 2,
-  },
+  container: { flex: 1, padding: 16, backgroundColor: '#fffbf5' },
+  headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingTop: 16 },
+  userName: { fontSize: 16, fontWeight: '600' },
+  welcomeBox: { backgroundColor: '#fffbf5', borderRadius: 12, paddingVertical: 12, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  welcomeText: { fontSize: 20, fontWeight: '600', color: '#123530' },
+  welcomeName: { fontSize: 18, fontWeight: '400', color: '#5EC385' },
+  profileImage: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#ddd' },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
+  sectionTitle: { fontSize: 20, fontWeight: '500', color: '#123530' },
+  viewAll: { fontSize: 14, color: '#5EC385' },
+  cardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 },
+  exploreCard: { width: '47%', borderRadius: 12, padding: 16, marginBottom: 2, justifyContent: 'space-between', position: 'relative', borderColor: '#12353026', borderWidth: 1, minHeight: 90 },
+  exploreCardText: { fontSize: 15, fontWeight: '500', color: '#123530' },
+  iconWrapper: { position: 'absolute', bottom: 10, right: 10 },
+  cardDaily: { backgroundColor: '#12353015' },
+  cardOutlooks: { backgroundColor: '#12353015' },
+  cardLearning: { backgroundColor: '#12353015', width: '30%' },
+  cardEvents: { backgroundColor: '#12353015', width: '30%' },
+  cardCalculator: { backgroundColor: '#12353015', width: '30%' },
+  titleDaily: { color: '#123530', fontSize: 18, marginBottom: 75, fontWeight: '600' },
+  titleOutlooks: { color: '#123530', fontSize: 18, marginBottom: 75, fontWeight: '600' },
+  titleLearning: { color: '#123530', fontSize: 14, marginBottom: 40, fontWeight: '600' },
+  titleEvents: { color: '#123530', fontSize: 14, marginBottom: 40, fontWeight: '600' },
+  titleCalculator: { color: '#123530', fontSize: 14, marginBottom: 40, fontWeight: '600' },
+  aiButton: { position: 'absolute', bottom: 20, right: 20, zIndex: 10 },
+  aiInner: { flexDirection: 'column', alignItems: 'center', gap: 0, paddingHorizontal: 10, paddingVertical: 6, backgroundColor: '#ffffffff', borderRadius: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 },
+  aiButtonTitle: { fontSize: 10, fontFamily: 'Bree', fontWeight: '600', color: '#123530', textTransform: 'lowercase' },
+  aiIconContainer: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
 });
