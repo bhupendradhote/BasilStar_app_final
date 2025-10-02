@@ -59,7 +59,8 @@ export default function DashboardScreen() {
       cardStyle: styles.cardDaily,
       textStyle: styles.titleDaily,
       iconSize: 45,
-      onPress: () => {}, 
+            onPress: () => router.push('/pages/fundamental/fundamental'),
+ 
     },
     {
       title: "Today's Outlooks",

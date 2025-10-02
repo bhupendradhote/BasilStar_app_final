@@ -24,6 +24,13 @@ export default function RootLayout() {
         <Stack.Screen name="pages/profile/userProfile" options={{ headerShown: false }} />
         <Stack.Screen name="pages/calculator/calculator" options={{ headerShown: false }} />
         <Stack.Screen name="pages/profile/notificationandAlerts" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/fundamental" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/companyProfileTabScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/corporateActionsScreen" options={{ headerShown: false }} />
+
+
+
+
 
   {/* Auth group */}
   <Stack.Screen name="(auth)" options={{ headerShown: false }} />

@@ -48,4 +48,73 @@ export const getIntradayChart = async (symbol: string, interval: '5min' | '1hour
   }
 };
 
+// ✅ Fetch all stocks list (symbol + companyName)
+export const getStockList = async () => {
+  try {
+    const response = await fmpApi.get(
+      `/stock-list?apikey=${FMP_API_KEY}`
+    );
+    return response.data; // [{symbol: "CROX", companyName: "Crocs, Inc."}, ...]
+  } catch (error: any) {
+    console.error('FMP Stock List API error:', error.message);
+    throw error;
+  }
+};
+
+// Fetch quote for a specific stock (full details)
+export const getQuote = async (symbol: string) => {
+  if (!symbol) throw new Error("Symbol is required for getQuote");
+
+  try {
+    const response = await fmpApi.get(`/quote?symbol=${symbol}&apikey=${FMP_API_KEY}`);
+    if (!Array.isArray(response.data) || response.data.length === 0) {
+      throw new Error(`No quote data found for symbol ${symbol}`);
+    }
+    return response.data[0]; // return single stock object
+  } catch (error: any) {
+    console.error('FMP Quote API error:', error.message);
+    throw error;
+  }
+};
+
+
+// Fetch company profile
+export const getCompanyProfile = async (symbol: string) => {
+  try {
+    const response = await fmpApi.get(`/profile?symbol=${symbol}&apikey=${FMP_API_KEY}`);
+    return response.data;
+  } catch (error: any) {
+    console.error('FMP Company Profile API error:', error.message);
+    throw error;
+  }
+};
+
+
+// Fetch dividends
+export const getDividends = async (symbol: string) => {
+  try {
+    const res = await fmpApi.get(
+      `/dividends?symbol=${symbol}&apikey=${FMP_API_KEY}`
+    );
+    return res.data; // returns array
+  } catch (err: any) {
+    console.error('FMP Dividends API error:', err.message);
+    return [];
+  }
+};
+
+// Fetch splits
+export const getSplits = async (symbol: string) => {
+  try {
+    const res = await fmpApi.get(
+      `/splits?symbol=${symbol}&apikey=${FMP_API_KEY}`
+    );
+    return res.data; // returns array
+  } catch (err: any) {
+    console.error('FMP Splits API error:', err.message);
+    return [];
+  }
+};
+
+
 export default fmpApi;
