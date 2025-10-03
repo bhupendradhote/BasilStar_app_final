@@ -26,7 +26,7 @@ export default function Screen2() {
         const token = await AsyncStorage.getItem("token");
         if (token) {
           // User is logged in, redirect to dashboard
-          router.replace("/(tabs)/dashboard");
+          router.replace("/(tabs)");
         } else {
           setLoading(false);
         }

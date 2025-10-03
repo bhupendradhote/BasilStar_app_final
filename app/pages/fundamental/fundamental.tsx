@@ -1,3 +1,4 @@
+// screens/fundamentalScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -10,12 +11,17 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Theme from '@/constants/theme';
 import { getStockList } from '@/services/_fmpApi';
 import OverviewScreen from '@/app/pages/fundamental/overviewTabScreen';
 import CompanyProfileTabScreen from '@/app/pages/fundamental/companyProfileTabScreen';
 import CorporateActionsScreen from './corporateActionsScreen';
+import KeyMetricsTbScreen from './keyMetricsTbScreen';
+import CashFlowTabScreen from './cashFlowTabScreen';
+import TechnicalAnalysisTabScreen from './technicalAnalysisTabScreen';
+import FundamentalAnalysisTabScreen from './fundamentalAnalysisTabScreen';
 
 type StockItem = {
   symbol: string;
@@ -35,6 +41,7 @@ const tabs = [
 export default function FundamentalScreen() {
   const colorScheme = useColorScheme();
   const colors = colorScheme === 'dark' ? Theme.Colors.dark : Theme.Colors.light;
+  const router = useRouter();
 
   const [search, setSearch] = useState('');
   const [stocks, setStocks] = useState<StockItem[]>([]);
@@ -50,6 +57,9 @@ export default function FundamentalScreen() {
         setLoading(true);
         const data = await getStockList();
         setStocks(data);
+        if (data.length > 0 && !selectedStock) {
+          setSelectedStock(data[0].symbol);
+        }
       } catch (err) {
         console.error('Error fetching stock list:', err);
       } finally {
@@ -77,16 +87,12 @@ export default function FundamentalScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <MaterialCommunityIcons name="view-dashboard" size={28} color="#123530" />
-        <TouchableOpacity>
-          <Ionicons name="notifications" size={28} color="#123530" />
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
+        <View style={{ width: 24 }} /> 
       </View>
-
-      {/* Section Title */}
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Fundamental</Text>
-      </View>
+        <Text style={styles.headerTitle}>Fundamental</Text>
 
       {/* Tabs */}
       <ScrollView
@@ -112,7 +118,7 @@ export default function FundamentalScreen() {
       <View
         style={[
           styles.searchContainer,
-          { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#f2f2f2' },
+          { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#1235300D' },
         ]}
       >
         <TextInput
@@ -167,8 +173,12 @@ export default function FundamentalScreen() {
           {activeTab === 'Overview' && <OverviewScreen symbol={selectedStock} />}
           {activeTab === 'Company Details' && <CompanyProfileTabScreen symbol={selectedStock} />}
           {activeTab === 'Corporate Actions' && <CorporateActionsScreen symbol={selectedStock} />}
-
-          {/* Add other tabs if needed */}
+          {activeTab === 'Key Metrics' && <KeyMetricsTbScreen symbol={selectedStock} />}
+          {activeTab === 'Cash Flow' && <CashFlowTabScreen symbol={selectedStock} />}
+          {activeTab === 'Technical Analysis' && <TechnicalAnalysisTabScreen symbol={selectedStock} />}
+          {activeTab === 'Fundamental Analysis' && (
+            <FundamentalAnalysisTabScreen symbol={selectedStock} />
+          )}
         </ScrollView>
       )}
     </View>
@@ -176,13 +186,28 @@ export default function FundamentalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: 16 ,paddingTop: 35},
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingTop: 16,
+    justifyContent: 'space-between',
+    borderRadius: 10,
+  },
+  backButton: {
+      marginRight: 12,
+    backgroundColor: "#0d2622",
+    padding: 6,
+    borderRadius: 8,
+    width: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '400',
+    color: '#123530',
+     paddingVertical: 12,
   },
   sectionHeader: { marginBottom: 8 },
   sectionTitle: { ...Theme.Typography.heading },

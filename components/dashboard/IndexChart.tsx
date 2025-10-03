@@ -140,7 +140,7 @@ const fetchAllQuotes = async () => {
   );
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 10 }}>
+    <ScrollView contentContainerStyle={{ padding: 0 }}>
       {/* Chart Container */}
       <View style={{ marginBottom: 20, backgroundColor: '#fffbf5', borderRadius: 12, padding: 10 }}>
         {/* Index Info Row */}
@@ -169,7 +169,7 @@ const fetchAllQuotes = async () => {
 
         {/* Tabs */}
         <View style={styles.tabsContainer}>
-          {(['1d', '1hour', '5min'] as Interval[]).map(i => (
+          {(['1hour', '1D', '5min'] as Interval[]).map(i => (
             <TouchableOpacity
               key={i}
               style={[styles.tabButton, interval === i && styles.tabActive]}
@@ -182,11 +182,13 @@ const fetchAllQuotes = async () => {
 
         {/* Chart */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Canvas style={{ width: screenWidth - 40, height: chartHeight }}>
+          <Canvas style={{ width: screenWidth - 90, height: chartHeight }}>
             <Path path={fillPath} style="fill" paint={gradientPaint} />
             <Path path={linePath} style="stroke" color={trendUp ? 'green' : 'red'} strokeWidth={2} />
           </Canvas>
           <View style={{ marginLeft: 5, justifyContent: 'space-between', height: chartHeight }}>
+            <Text style={{ fontSize: 10, color: '#123530' }}>{max.toFixed(2)}</Text>
+            <Text style={{ fontSize: 10, color: '#123530' }}>{max.toFixed(2)}</Text>
             <Text style={{ fontSize: 10, color: '#123530' }}>{max.toFixed(2)}</Text>
             <Text style={{ fontSize: 10, color: '#123530' }}>{mid.toFixed(2)}</Text>
             <Text style={{ fontSize: 10, color: '#123530' }}>{min.toFixed(2)}</Text>

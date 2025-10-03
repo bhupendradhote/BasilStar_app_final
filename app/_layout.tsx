@@ -12,7 +12,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         {/* Intro / Splash Screens */}
-        <Stack.Screen name="intro/screen1" options={{ headerShown: false }} />
         <Stack.Screen name="intro/screen2" options={{ headerShown: false }} />
         <Stack.Screen name="pages/todaysOutlook/todaysOutlook" options={{ headerShown: false }} />
         <Stack.Screen name="pages/todaysOutlook/todaysOutlookDetails" options={{ headerShown: false }} />
@@ -27,11 +26,12 @@ export default function RootLayout() {
         <Stack.Screen name="pages/fundamental/fundamental" options={{ headerShown: false }} />
         <Stack.Screen name="pages/fundamental/companyProfileTabScreen" options={{ headerShown: false }} />
         <Stack.Screen name="pages/fundamental/corporateActionsScreen" options={{ headerShown: false }} />
-
-
-
-
-
+        <Stack.Screen name="pages/fundamental/keyMetricsTbScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/cashFlowTabScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/technicalAnalysisTabScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/overviewTabScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/fundamental/fundamentalAnalysisTabScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="pages/upcomingEvents/upcomingEvents" options={{ headerShown: false }} />
   {/* Auth group */}
   <Stack.Screen name="(auth)" options={{ headerShown: false }} />
 
@@ -39,7 +39,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
         {/* Optional modal */}
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

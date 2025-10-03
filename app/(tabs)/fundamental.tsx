@@ -6,11 +6,12 @@ import {
   useColorScheme,
   TouchableOpacity,
   TextInput,
-  ScrollView,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import Theme from '@/constants/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,8 +26,8 @@ export default function FundamentalScreen() {
   const periods = ['Annual', 'Quarter'];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -120,7 +121,6 @@ export default function FundamentalScreen() {
 
         {/* Add bottom padding so AI button doesn't overlap content */}
         <View style={{ height: 120 }} />
-      </ScrollView>
 
       {/* AI Chat Section - fixed at bottom right */}
        <TouchableOpacity style={[styles.aiButton, { position: 'absolute', bottom: 20, right: 20 }]}>
@@ -131,7 +131,9 @@ export default function FundamentalScreen() {
           <Text style={styles.aiButtonTitle}>chat with ai</Text>
         </View>
       </TouchableOpacity>
-    </View>
+      </ScrollView>
+
+    </SafeAreaView>
   );
 }
 

@@ -68,7 +68,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="dashboard"
+        name="index"
         options={{
           tabBarIcon: ({ focused }) =>
             renderIconWithLabel(focused, MaterialIcons, 'dashboard', 20, 'Dashboard'),

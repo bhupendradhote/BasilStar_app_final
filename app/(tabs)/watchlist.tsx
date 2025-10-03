@@ -5,9 +5,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
 } from "react-native";
 import { Ionicons,MaterialCommunityIcons,MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const WatchlistScreen = () => {
   const [activeTab, setActiveTab] = useState("Nifty 50");

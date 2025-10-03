@@ -84,7 +84,8 @@ export default function DashboardScreen() {
       cardStyle: styles.cardEvents,
       textStyle: styles.titleEvents,
       iconSize: 24,
-      onPress: () => {}, 
+      onPress: () => router.push('/pages/upcomingEvents/upcomingEvents'),
+
     },
     {
       title: 'Calculator',

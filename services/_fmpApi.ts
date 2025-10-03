@@ -116,5 +116,128 @@ export const getSplits = async (symbol: string) => {
   }
 };
 
+// 🔑 Fetch key metrics
+export const getKeyMetrics = async (symbol: string) => {
+  try {
+    const res = await fmpApi.get(
+      `/key-metrics?symbol=${symbol}&apikey=${FMP_API_KEY}`
+    );
+    return res.data; // returns array of key metrics
+  } catch (err: any) {
+    console.error('FMP Key Metrics API error:', err.message);
+    return [];
+  }
+};
+
+export const fetchCashFlowStatement = async (symbol: string) => {
+  try {
+    const response = await axios.get(`${FMP_BASE_URL}/cash-flow-statement`, {
+      params: { symbol, apikey: FMP_API_KEY },
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (err) {
+    console.error("Cash Flow API error:", err);
+    return [];
+  }
+};
+
+export const fetchIncomeStatement = async (symbol: string) => {
+  try {
+    const response = await axios.get(`${FMP_BASE_URL}/income-statement`, {
+      params: { symbol, apikey: FMP_API_KEY },
+    });
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (err) {
+    console.error("Income Statement API error:", err);
+    return [];
+  }
+};
+
+export const getIncomeStatement = async (symbol: string) => {
+  try {
+    const res = await axios.get(`${FMP_BASE_URL}/income-statement`, {
+      params: { symbol, apikey: FMP_API_KEY, limit: 10 },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Income Statement API error:", err);
+    return [];
+  }
+};
+
+export const getBalanceSheet = async (symbol: string) => {
+  try {
+    const res = await axios.get(`${FMP_BASE_URL}/balance-sheet-statement`, {
+      params: { symbol, apikey: FMP_API_KEY, limit: 10 },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Balance Sheet API error:", err);
+    return [];
+  }
+};
+
+export async function getUpcomingIPOs(limit: number = 30) {
+  try {
+    const { data } = await fmpApi.get(`/ipos-calendar?apikey=${FMP_API_KEY}&limit=${limit}`);
+    // console.log("IPO API raw response:", data);
+    if (Array.isArray(data)) return data;
+    if (data?.ipoCalendar) return data.ipoCalendar;
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching IPO data:", error?.message || error);
+    return [];
+  }
+}
+
+
+// _fmpApi.ts
+export async function getEconomicCalendar(limit: number = 30) {
+  try {
+    const { data } = await fmpApi.get(`/economic-calendar?apikey=${FMP_API_KEY}&limit=${limit}`);
+    if (Array.isArray(data)) return data;
+    if (data?.economicCalendar) return data.economicCalendar;
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching Economic Calendar:", error?.message || error);
+    return [];
+  }
+}
+
+export async function getEarningsCalendar(limit: number = 30) {
+  try {
+    const { data } = await fmpApi.get(`/earnings-calendar?apikey=${FMP_API_KEY}&limit=${limit}`);
+    if (Array.isArray(data)) return data;
+    if (data?.earningsCalendar) return data.earningsCalendar;
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching Earnings Calendar:", error?.message || error);
+    return [];
+  }
+}
+
+// Splits Calendar
+export const getSplitsCalendar = async (limit: number = 50) => {
+  try {
+    const res = await axios.get(`${FMP_BASE_URL}/splits-calendar?apikey=${FMP_API_KEY}&limit=${limit}`);
+    if (Array.isArray(res.data)) return res.data;
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching splits calendar:", error?.message || error);
+    return [];
+  }
+};
+
+// Dividends Calendar
+export const getDividendsCalendar = async (limit: number = 50) => {
+  try {
+    const res = await axios.get(`${FMP_BASE_URL}/dividends-calendar?apikey=${FMP_API_KEY}&limit=${limit}`);
+    if (Array.isArray(res.data)) return res.data;
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching dividends calendar:", error?.message || error);
+    return [];
+  }
+};
 
 export default fmpApi;

@@ -2,13 +2,13 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
-export default function Screen1() {
+export default function Index() {
   const router = useRouter();
 
   // Automatically navigate after 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push('../intro/screen2');
+      router.push('/intro/screen2');
     }, 3000); // 3000ms = 3s
 
     // Cleanup in case component unmounts before 3s
@@ -19,7 +19,7 @@ export default function Screen1() {
     <View style={styles.container}>
       {/* Logo */}
       <Image
-        source={require('../../assets/images/logo/basillog.png')}
+        source={require('@/assets/images/logo/basillog.png')}
         style={styles.logo}
         resizeMode="contain"
       />
